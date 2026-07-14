@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:      # 允许手动触发
+
+# 设置全局权限，否则部署到 gh-pages 可能会失败
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js 环境 (带缓存)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'        # 自动缓存 node_modules，加速安装
+
+      - name: 安装依赖 (使用 ci 保证一致性)
+        run: npm ci
+
+      - name: 运行代码检查 (阻断不合格代码)
+        run: npm run lint
+
+      - name: 运行测试 (如果有)
+        run: npm run test --if-present
+
+      - name: 构建项目
+        run: npm run build
+        env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}   # 注入生产环境变量
+
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist            # Vite 默认输出目录，React 可能是 build
+          keep_files: false              # 每次完全覆盖，避免旧文件残留
+          cname: your-domain.com         # 如果有自定义域名，填写；否则删掉此行
