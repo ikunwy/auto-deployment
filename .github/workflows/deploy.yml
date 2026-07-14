@@ -17,11 +17,16 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10 
+
       - name: 设置 Node.js 环境 (带缓存)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'        # 自动缓存 node_modules，加速安装
+          node-version: '24'          # 指定 Node.js 版本
+          cache: 'pnpm'          # 会自动识别 pnpm-lock.yaml
 
       - name: 安装依赖 (使用 ci 保证一致性)
         run: pnpm ci
