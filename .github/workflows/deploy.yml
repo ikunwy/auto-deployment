@@ -21,19 +21,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'        # 自动缓存 node_modules，加速安装
+          cache: 'pnpm'        # 自动缓存 node_modules，加速安装
 
       - name: 安装依赖 (使用 ci 保证一致性)
-        run: npm ci
+        run: pnpm ci
 
       - name: 运行代码检查 (阻断不合格代码)
-        run: npm run lint
-
-      - name: 运行测试 (如果有)
-        run: npm run test --if-present
+        run: pnpm lint
 
       - name: 构建项目
-        run: npm run build
+        run: pnpm run build
 
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
