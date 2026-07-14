@@ -29,10 +29,10 @@ jobs:
           cache: 'pnpm'          # 会自动识别 pnpm-lock.yaml
 
       - name: 安装依赖 (使用 ci 保证一致性)
-        run: pnpm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 运行代码检查 (阻断不合格代码)
-        run: pnpm lint
+        run: pnpm run lint
 
       - name: 构建项目
         run: pnpm run build
